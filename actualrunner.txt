@@ -1,0 +1,38 @@
+#!/bin/bash
+
+app=$1
+
+module load cuda75/toolkit/7.5.18
+module load cuda75/profiler/7.5.18
+
+log="humanred.log"
+executor="execCommand"
+
+runnable="NA"
+
+make -C $app clean
+make -C $app
+
+for file in $app/*
+do
+  permission=($(stat -c "%a %n" $file | awk '{print $1}'))
+  if [ $permission -eq "775" ]
+  then
+    runnable=$file
+  fi
+done
+
+echo "This is the runnable: $runnable"
+
+if [ -e $app/$executor ]
+then
+  echo "In exec"
+( cd $app && nvprof --log-file $log $(cat $executor) )
+else
+  echo "In other"
+( cd $app && nvprof --log-file $log ./$(basename $runnable) )
+fi
+
+python log_reader.py $app/
+
+rm $app/$log

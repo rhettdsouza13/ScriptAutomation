@@ -1,0 +1,15 @@
+#!/bin/bash
+
+basspath=$1
+
+timesEst=($(java -jar EnergyEstimate.jar $basspath/config1.properties | grep "Exec time" | awk '{print $3}'))
+names=($(java -jar EnergyEstimate.jar $basspath/config1.properties | grep "Name" | awk '{print $4}'))
+
+i=0
+len=${#timesEst[@]}
+
+while [ $i -lt $len ]
+do
+  echo "${basspath:13}, ${names[$i]}, ${timesEst[$i]}"
+  i=`expr $i + 1`
+done

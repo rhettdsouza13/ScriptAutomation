@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for APP in applications/*
+do
+  bash estimatorrunner.sh $APP >> estimates.csv
+
+done
+
+for BENCH in Benchmarks/runprogs/*
+do
+  bash actualrunner.sh $BENCH
+done
